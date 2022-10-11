@@ -15,10 +15,11 @@ public class ListAggregatorTest {
         list = Arrays.asList(1,2,4,2,5);
     }
 
+    ListAggregator aggregator = new ListAggregator();
+
     @Test
     public void sum() {
 
-        ListAggregator aggregator = new ListAggregator();
         int sum = aggregator.sum(list);
 
         Assertions.assertEquals(14, sum);
@@ -27,7 +28,6 @@ public class ListAggregatorTest {
     @Test
     public void max() {
 
-        ListAggregator aggregator = new ListAggregator();
         int max = aggregator.max(list);
 
         Assertions.assertEquals(5, max);
@@ -36,7 +36,6 @@ public class ListAggregatorTest {
     @Test
     public void min() {
 
-        ListAggregator aggregator = new ListAggregator();
         int min = aggregator.min(list);
 
         Assertions.assertEquals(1, min);
@@ -44,10 +43,39 @@ public class ListAggregatorTest {
 
     @Test
     public void distinct() {
-
+        class StubListDeduplicator implements GenericListDeduplicator {
+            @Override
+            public List<Integer> deduplicate(List<Integer> list) {
+                return Arrays.asList(1, 2, 4, 5);
+            }
+        }
         ListAggregator aggregator = new ListAggregator();
-        int distinct = aggregator.distinct(list);
-
+        StubListDeduplicator deduplicator = new StubListDeduplicator();
+        int distinct = aggregator.distinct(list, deduplicator);
         Assertions.assertEquals(4, distinct);
     }
+
+    @Test
+    public void max_bug_7263(){
+        list = Arrays.asList(-1,-4,-5);
+
+        int max = aggregator.max(list);
+
+        Assertions.assertEquals(-1, max);
+    }
+
+    @Test
+    public void max_bug_8726() {
+        List<Integer> list = Arrays.asList(1,2,4,2);
+        class StubListDeduplicator implements GenericListDeduplicator{
+            @Override public List<Integer> deduplicate(List<Integer> list) {
+                return  Arrays.asList(1, 2, 4);
+            }
+        }
+        ListAggregator aggregator = new ListAggregator();
+        StubListDeduplicator deduplicator = new StubListDeduplicator();
+        int distinct = aggregator.distinct(list, deduplicator);
+        Assertions.assertEquals(3, distinct);
+    }
+
 }

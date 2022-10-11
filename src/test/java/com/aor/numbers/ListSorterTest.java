@@ -18,8 +18,6 @@ public class ListSorterTest {
 
     @Test
     public void sort() {
-
-
         ListSorter sorter = new ListSorter();
         List<Integer> sorted = sorter.sort(list);
 
