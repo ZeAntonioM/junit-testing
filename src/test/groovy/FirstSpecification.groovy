@@ -41,4 +41,38 @@ class FirstSpecification extends Specification{
             list.size() == 4
     }
 
+    def "numbers to the power of two" (int a, int b, int c) {
+        expect:
+            Math.pow(a,b) == c
+
+        where:
+            a | b | c
+            1 | 2 | 1
+            2 | 2 | 4
+            3 | 2 | 9
+    }
+
+    def "Another implementation for bug_8726"() {
+        given:
+            def deduplicator = Mock(GenericListDeduplicator)
+            deduplicator.deduplicate(Arrays.asList(1, 2, 4, 2)) >> Arrays.asList(1, 2, 4)
+
+        when:
+            def result = deduplicator.deduplicate(Arrays.asList(1, 2,4, 2))
+
+        then:
+            result == Arrays.asList(1,2,4)
+    }
+
+    def "Should verify notify was called"() {
+        given:
+            def notifier = Mock(Notifier)
+
+        when:
+            notifier.notify('foo')
+
+        then:
+            2 * notifier.notify(!'foo')
+    }
+
 }
